@@ -1,6 +1,6 @@
 {
   "name": "hookhawk",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A simply powerful continuous depolyment system",
   "main": "out/index.js",
   "scripts": {

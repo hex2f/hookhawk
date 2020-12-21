@@ -44,7 +44,7 @@ export default function start(appsPath: string, port: number) {
       return res.sendStatus(404)
     }
 
-    const signature = req.headers['X-Hub-Signature-256']
+    const signature = req.headers['x-hub-signature-256']
     if (!signature) {
       error(`[${appName}] No signature provided`)
     }
