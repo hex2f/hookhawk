@@ -17,7 +17,7 @@ function signData(secret: string, data: any) {
 }
 
 function verifySignature(secret: string, data: any, signature: string) {
-	return Buffer.from(signature).compare(Buffer.from(signData(secret, data))) != 0
+	return Buffer.from(signature).compare(Buffer.from(signData(secret, data))) == 0
 }
 
 export default function start(appsPath: string, port: number) {
@@ -47,12 +47,14 @@ export default function start(appsPath: string, port: number) {
     const signature = req.headers['x-hub-signature-256']
     if (!signature) {
       error(`[${appName}] No signature provided`)
+      return res.sendStatus(401)
     }
 
     const secret = await readFile(hawkcfgPath, 'utf-8')
     info(`[${appName}] secret: ${secret}, signature: ${signature}`)
     if (!verifySignature(secret, JSON.stringify(req.body), signature as string)) {
       error(`[${appName}] Invalid signature`)
+      return res.sendStatus(401)
     } else {
       info(`[${appName}] Signature validated`)
     }
@@ -72,7 +74,7 @@ export default function start(appsPath: string, port: number) {
       await exec(`cd ${appPath} && sh hawk.sh`)
     }
 
-    success(`[${appName}] Deployd`)
+    success(`[${appName}] Deployed`)
 
     res.sendStatus(200)
   })
