@@ -69,7 +69,7 @@ export default function start(appsPath: string, port: number) {
 
     if (await exists(hawkPath)) {
       info(`[${appName}] Running hawk script`)
-      await exec(prehawkPath)
+      await exec(hawkPath)
     }
 
     res.sendStatus(200)

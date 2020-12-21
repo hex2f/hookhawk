@@ -59,7 +59,7 @@ function start(appsPath, port) {
         await exec(`git -C "${appPath}" pull`);
         if (await exists(hawkPath)) {
             log_1.info(`[${appName}] Running hawk script`);
-            await exec(prehawkPath);
+            await exec(hawkPath);
         }
         res.sendStatus(200);
     });
