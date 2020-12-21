@@ -37,7 +37,7 @@ function start(appsPath, port) {
             log_1.error(`[${appName}] No .hawkcfg found, please remove ${chalk_1.default.italic(appPath)} then reinitialize using ${chalk_1.default.bold(`hookhawk new-app ${appName} <git uri>`)}`);
             return res.sendStatus(404);
         }
-        const signature = req.headers['x-hub-signature'];
+        const signature = req.headers['X-Hub-Signature-256'];
         if (!signature) {
             log_1.error(`[${appName}] No signature provided`);
         }
