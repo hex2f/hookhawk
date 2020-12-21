@@ -8,7 +8,7 @@ switch (process.argv[2]) {
     Server(process.cwd(), parseInt(process.argv[3]) || 8081)
     break;
   }
-  case "new-app": {
+  case "add": {
     if (!process.argv[3] || !process.argv[4]) { usageError(); break }
     NewApp(process.argv[3].toLowerCase(), process.argv[4])
     break

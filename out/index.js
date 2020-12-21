@@ -11,7 +11,7 @@ switch (process.argv[2]) {
         server_1.default(process.cwd(), parseInt(process.argv[3]) || 8081);
         break;
     }
-    case "new-app": {
+    case "add": {
         if (!process.argv[3] || !process.argv[4]) {
             log_1.usageError();
             break;

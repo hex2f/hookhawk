@@ -34,7 +34,7 @@ function start(appsPath, port) {
         }
         const hawkcfgPath = path_1.default.join(appPath, '.hawkcfg');
         if (!await exists(hawkcfgPath)) {
-            log_1.error(`[${appName}] No .hawkcfg found, please remove ${chalk_1.default.italic(appPath)} then reinitialize using ${chalk_1.default.bold(`hookhawk new-app ${appName} <git uri>`)}`);
+            log_1.error(`[${appName}] No .hawkcfg found, please remove ${chalk_1.default.italic(appPath)} then reinitialize using ${chalk_1.default.bold(`hookhawk add ${appName} <git uri>`)}`);
             return res.sendStatus(404);
         }
         const signature = req.headers['x-hub-signature-256'];

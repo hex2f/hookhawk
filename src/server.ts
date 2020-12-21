@@ -40,7 +40,7 @@ export default function start(appsPath: string, port: number) {
 
     const hawkcfgPath = path.join(appPath, '.hawkcfg')
     if (!await exists(hawkcfgPath)) {
-      error(`[${appName}] No .hawkcfg found, please remove ${chalk.italic(appPath)} then reinitialize using ${chalk.bold(`hookhawk new-app ${appName} <git uri>`)}`)
+      error(`[${appName}] No .hawkcfg found, please remove ${chalk.italic(appPath)} then reinitialize using ${chalk.bold(`hookhawk add ${appName} <git uri>`)}`)
       return res.sendStatus(404)
     }
 

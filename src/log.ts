@@ -40,5 +40,5 @@ export function usageError() {
   console.log('Usage: hookhawk <command>\n')
   console.log('Available commands:')
   console.log('  hookhawk start <?port> - Starts the webhook server on an optional port (8081 by default)')
-  console.log('  hookhawk new-app <name> <git uri> - Clones and sets up a new app from the provided git uri')
+  console.log('  hookhawk add <name> <git uri> - Clones and sets up a new app from the provided git uri')
 }
