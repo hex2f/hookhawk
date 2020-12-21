@@ -9,6 +9,7 @@ import { promisify } from 'util'
 import { info, error, success } from './log'
 
 const exists = promisify(fs.exists)
+const readdir = promisify(fs.readdir)
 const readFile = promisify(fs.readFile)
 const exec = promisify(child_process.exec)
 
@@ -20,11 +21,19 @@ function verifySignature(secret: string, data: any, signature: string) {
 	return Buffer.from(signature).compare(Buffer.from(signData(secret, data))) == 0
 }
 
-export default function start(appsPath: string, port: number) {
+export default async function start(appsPath: string, port: number) {
   info(`Creating server on :${port} in ${appsPath}`)
 
   const app = express()
   app.use(express.json())
+
+  info(`Searching for apps in ${appsPath}`)
+  for (const dir of await readdir(appsPath)) {
+    if (await exists(path.join(appsPath, dir, 'hawk.sh'))) {
+      await exec(`cd ${dir} && sh hawk.sh`)
+      success(`Started ${dir}`)
+    }
+  }
 
   app.post('/:app', async (req, res) => {
     const appName = req.params.app as string

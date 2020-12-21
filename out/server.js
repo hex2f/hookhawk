@@ -12,6 +12,7 @@ const chalk_1 = __importDefault(require("chalk"));
 const util_1 = require("util");
 const log_1 = require("./log");
 const exists = util_1.promisify(fs_1.default.exists);
+const readdir = util_1.promisify(fs_1.default.readdir);
 const readFile = util_1.promisify(fs_1.default.readFile);
 const exec = util_1.promisify(child_process_1.default.exec);
 function signData(secret, data) {
@@ -20,10 +21,17 @@ function signData(secret, data) {
 function verifySignature(secret, data, signature) {
     return Buffer.from(signature).compare(Buffer.from(signData(secret, data))) == 0;
 }
-function start(appsPath, port) {
+async function start(appsPath, port) {
     log_1.info(`Creating server on :${port} in ${appsPath}`);
     const app = express_1.default();
     app.use(express_1.default.json());
+    log_1.info(`Searching for apps in ${appsPath}`);
+    for (const dir of await readdir(appsPath)) {
+        if (await exists(path_1.default.join(appsPath, dir, 'hawk.sh'))) {
+            await exec(`cd ${dir} && sh hawk.sh`);
+            log_1.success(`Started ${dir}`);
+        }
+    }
     app.post('/:app', async (req, res) => {
         const appName = req.params.app;
         log_1.info(`[${appName}] Webhook called`);
