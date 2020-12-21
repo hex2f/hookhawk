@@ -1,6 +1,6 @@
 {
   "name": "hookhawk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simply powerful continuous depolyment system",
   "main": "out/index.js",
   "scripts": {
@@ -20,7 +20,7 @@
     "url": "https://github.com/leahlundqvist/hookhawk/issues"
   },
   "bin": {
-    "hookhawk": "out/index.js"
+    "hookhawk": "./hookhawk.js"
   },
   "homepage": "https://github.com/leahlundqvist/hookhawk#readme",
   "devDependencies": {
