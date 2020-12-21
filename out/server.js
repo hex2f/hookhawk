@@ -25,7 +25,7 @@ function start(appsPath, port) {
     const app = express_1.default();
     app.use(express_1.default.json());
     app.post('/:app', async (req, res) => {
-        const { appName } = req.params;
+        const appName = req.params.app;
         log_1.info(`Webhook called for "${appName}"`);
         const appPath = path_1.default.resolve(appsPath, appName);
         if (!await exists(appPath)) {

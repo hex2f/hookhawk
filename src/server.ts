@@ -27,7 +27,7 @@ export default function start(appsPath: string, port: number) {
   app.use(express.json())
 
   app.post('/:app', async (req, res) => {
-    const { appName } = req.params
+    const appName = req.params.app as string
     
     info(`Webhook called for "${appName}"`)
 
