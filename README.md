@@ -1,5 +1,5 @@
 # HookHawk
-A simply powerful continous distribution system.
+A simply powerful continuous depolyment system.
 
 ## Usage
 ```
