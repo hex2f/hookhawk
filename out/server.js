@@ -18,7 +18,7 @@ function signData(secret, data) {
     return 'sha256=' + crypto_1.default.createHmac('sha256', secret).update(data).digest('hex');
 }
 function verifySignature(secret, data, signature) {
-    return Buffer.from(signature).compare(Buffer.from(signData(secret, data))) != 0;
+    return Buffer.from(signature).compare(Buffer.from(signData(secret, data))) == 0;
 }
 function start(appsPath, port) {
     log_1.info(`Creating server on :${port} in ${appsPath}`);
@@ -40,11 +40,13 @@ function start(appsPath, port) {
         const signature = req.headers['x-hub-signature-256'];
         if (!signature) {
             log_1.error(`[${appName}] No signature provided`);
+            return res.sendStatus(401);
         }
         const secret = await readFile(hawkcfgPath, 'utf-8');
         log_1.info(`[${appName}] secret: ${secret}, signature: ${signature}`);
         if (!verifySignature(secret, JSON.stringify(req.body), signature)) {
             log_1.error(`[${appName}] Invalid signature`);
+            return res.sendStatus(401);
         }
         else {
             log_1.info(`[${appName}] Signature validated`);
@@ -61,7 +63,7 @@ function start(appsPath, port) {
             log_1.info(`[${appName}] Running hawk script`);
             await exec(`cd ${appPath} && sh hawk.sh`);
         }
-        log_1.success(`[${appName}] Deployd`);
+        log_1.success(`[${appName}] Deployed`);
         res.sendStatus(200);
     });
     app.listen(port, () => log_1.info(`Listening on :${port}`));
