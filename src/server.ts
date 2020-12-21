@@ -6,7 +6,7 @@ import path from 'path'
 import chalk from 'chalk'
 import { promisify } from 'util'
 
-import { info, error } from './log'
+import { info, error, success } from './log'
 
 const exists = promisify(fs.exists)
 const readFile = promisify(fs.readFile)
@@ -29,7 +29,7 @@ export default function start(appsPath: string, port: number) {
   app.post('/:app', async (req, res) => {
     const appName = req.params.app as string
     
-    info(`Webhook called for "${appName}"`)
+    info(`[${appName}] Webhook called`)
 
     const appPath = path.resolve(appsPath, appName)
 
@@ -61,7 +61,7 @@ export default function start(appsPath: string, port: number) {
     const hawkPath = path.join(appPath, 'hawk.sh')
     if (await exists(prehawkPath)) {
       info(`[${appName}] Running prehawk script`)
-      await exec(prehawkPath)
+      await exec(`cd ${appPath} && sh prehawk.sh`)
     }
 
     info(`[${appName}] Pulling updates`)
@@ -69,8 +69,10 @@ export default function start(appsPath: string, port: number) {
 
     if (await exists(hawkPath)) {
       info(`[${appName}] Running hawk script`)
-      await exec(hawkPath)
+      await exec(`cd ${appPath} && sh hawk.sh`)
     }
+
+    success(`[${appName}] Deployd`)
 
     res.sendStatus(200)
   })

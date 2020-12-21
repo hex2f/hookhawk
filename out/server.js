@@ -26,7 +26,7 @@ function start(appsPath, port) {
     app.use(express_1.default.json());
     app.post('/:app', async (req, res) => {
         const appName = req.params.app;
-        log_1.info(`Webhook called for "${appName}"`);
+        log_1.info(`[${appName}] Webhook called`);
         const appPath = path_1.default.resolve(appsPath, appName);
         if (!await exists(appPath)) {
             log_1.info(`[${appName}] Hook does not exist`);
@@ -53,14 +53,15 @@ function start(appsPath, port) {
         const hawkPath = path_1.default.join(appPath, 'hawk.sh');
         if (await exists(prehawkPath)) {
             log_1.info(`[${appName}] Running prehawk script`);
-            await exec(prehawkPath);
+            await exec(`cd ${appPath} && sh prehawk.sh`);
         }
         log_1.info(`[${appName}] Pulling updates`);
         await exec(`git -C "${appPath}" pull`);
         if (await exists(hawkPath)) {
             log_1.info(`[${appName}] Running hawk script`);
-            await exec(hawkPath);
+            await exec(`cd ${appPath} && sh hawk.sh`);
         }
+        log_1.success(`[${appName}] Deployd`);
         res.sendStatus(200);
     });
     app.listen(port, () => log_1.info(`Listening on :${port}`));
