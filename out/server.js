@@ -11,6 +11,7 @@ const path_1 = __importDefault(require("path"));
 const chalk_1 = __importDefault(require("chalk"));
 const util_1 = require("util");
 const log_1 = require("./log");
+const status_page_1 = __importDefault(require("./status-page"));
 const exists = util_1.promisify(fs_1.default.exists);
 const readdir = util_1.promisify(fs_1.default.readdir);
 const readFile = util_1.promisify(fs_1.default.readFile);
@@ -24,7 +25,10 @@ function verifySignature(secret, data, signature) {
 async function start(appsPath, port) {
     log_1.info(`Creating server on :${port} in ${appsPath}`);
     const app = express_1.default();
+    const http = require('http').createServer(app);
+    const io = require('socket.io')(http);
     app.use(express_1.default.json());
+    new status_page_1.default(io);
     log_1.info(`Searching for apps in ${appsPath}`);
     for (const dir of await readdir(appsPath)) {
         if (await exists(path_1.default.join(appsPath, dir, 'hawk.sh'))) {
@@ -32,6 +36,7 @@ async function start(appsPath, port) {
             log_1.success(`Started ${dir}`);
         }
     }
+    app.get('/', (req, res) => res.sendFile(path_1.default.resolve('status_page.html')));
     app.post('/:app', async (req, res) => {
         const appName = req.params.app;
         log_1.info(`[${appName}] Webhook called`);
@@ -74,6 +79,8 @@ async function start(appsPath, port) {
         log_1.success(`[${appName}] Deployed`);
         res.sendStatus(200);
     });
-    app.listen(port, () => log_1.info(`Listening on :${port}`));
+    http.listen(port, () => {
+        log_1.info(`Listening on :${port}`);
+    });
 }
 exports.default = start;

@@ -1,6 +1,6 @@
 {
   "name": "hookhawk",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "A simply powerful continuous depolyment system",
   "main": "out/index.js",
   "scripts": {
@@ -30,6 +30,8 @@
   },
   "dependencies": {
     "chalk": "^4.1.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "pm2": "^4.5.1",
+    "socket.io": "^3.0.4"
   }
 }

@@ -7,6 +7,7 @@ import chalk from 'chalk'
 import { promisify } from 'util'
 
 import { info, error, success } from './log'
+import StatusPage from './status-page'
 
 const exists = promisify(fs.exists)
 const readdir = promisify(fs.readdir)
@@ -25,7 +26,12 @@ export default async function start(appsPath: string, port: number) {
   info(`Creating server on :${port} in ${appsPath}`)
 
   const app = express()
+  const http = require('http').createServer(app)
+  const io = require('socket.io')(http)
+
   app.use(express.json())
+
+  new StatusPage(io)
 
   info(`Searching for apps in ${appsPath}`)
   for (const dir of await readdir(appsPath)) {
@@ -34,6 +40,8 @@ export default async function start(appsPath: string, port: number) {
       success(`Started ${dir}`)
     }
   }
+
+  app.get('/', (req, res) => res.sendFile(path.resolve('status_page.html')))
 
   app.post('/:app', async (req, res) => {
     const appName = req.params.app as string
@@ -88,5 +96,7 @@ export default async function start(appsPath: string, port: number) {
     res.sendStatus(200)
   })
 
-  app.listen(port, () => info(`Listening on :${port}`))
+  http.listen(port, () => {
+    info(`Listening on :${port}`)
+  })
 }
