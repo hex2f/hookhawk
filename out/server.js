@@ -32,17 +32,20 @@ async function start(appsPath, port) {
     new status_page_1.default(io);
     log_1.info(`Searching for apps in ${appsPath}`);
     for (const dir of await readdir(appsPath)) {
-        if (await exists(path_1.default.join(appsPath, dir, 'prehawk.sh'))) {
-            log_1.info(`[${dir}] Running prehawk.sh`);
-            await exec(`cd ${dir} && sh prehawk.sh`);
+        if (await exists(path_1.default.join(appsPath, dir, '.hawkcfg'))) {
+            log_1.info(`[${dir}] Starting`);
+            if (await exists(path_1.default.join(appsPath, dir, 'prehawk.sh'))) {
+                log_1.info(`[${dir}] Running prehawk.sh`);
+                await exec(`cd ${dir} && sh prehawk.sh`);
+            }
+            log_1.info(`[${dir}] Pulling updates`);
+            await exec(`git -C "${dir}" pull`);
+            if (await exists(path_1.default.join(appsPath, dir, 'hawk.sh'))) {
+                log_1.info(`[${dir}] Running hawk.sh`);
+                await exec(`cd ${dir} && sh hawk.sh`);
+            }
+            log_1.success(`[${dir}] Started`);
         }
-        log_1.info(`[${dir}] Pulling updates`);
-        await exec(`git -C "${dir}" pull`);
-        if (await exists(path_1.default.join(appsPath, dir, 'hawk.sh'))) {
-            log_1.info(`[${dir}] Running hawk.sh`);
-            await exec(`cd ${dir} && sh hawk.sh`);
-        }
-        log_1.success(`[${dir}] Started`);
     }
     app.get('/', (_, res) => res.send(status_page_html_1.default));
     app.post('/:app', async (req, res) => {

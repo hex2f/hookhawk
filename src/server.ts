@@ -36,17 +36,20 @@ export default async function start(appsPath: string, port: number) {
 
   info(`Searching for apps in ${appsPath}`)
   for (const dir of await readdir(appsPath)) {
-    if (await exists(path.join(appsPath, dir, 'prehawk.sh'))) {
-      info(`[${dir}] Running prehawk.sh`)
-      await exec(`cd ${dir} && sh prehawk.sh`)
+    if (await exists(path.join(appsPath, dir, '.hawkcfg'))) {
+      info(`[${dir}] Starting`)
+      if (await exists(path.join(appsPath, dir, 'prehawk.sh'))) {
+        info(`[${dir}] Running prehawk.sh`)
+        await exec(`cd ${dir} && sh prehawk.sh`)
+      }
+      info(`[${dir}] Pulling updates`)
+      await exec(`git -C "${dir}" pull`)
+      if (await exists(path.join(appsPath, dir, 'hawk.sh'))) {
+        info(`[${dir}] Running hawk.sh`)
+        await exec(`cd ${dir} && sh hawk.sh`)
+      }
+      success(`[${dir}] Started`)
     }
-    info(`[${dir}] Pulling updates`)
-    await exec(`git -C "${dir}" pull`)
-    if (await exists(path.join(appsPath, dir, 'hawk.sh'))) {
-      info(`[${dir}] Running hawk.sh`)
-      await exec(`cd ${dir} && sh hawk.sh`)
-    }
-    success(`[${dir}] Started`)
   }
 
   app.get('/', (_, res) => res.send(StatusPageHTML))
