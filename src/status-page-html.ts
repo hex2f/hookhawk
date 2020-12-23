@@ -42,8 +42,10 @@ export default `<html>
         font-size: 13px;
         color: rgba(0,0,0,0.4);
       }
+      .process .status { min-width: 75px; }
       .process .status::before { content: "Status"; }
       .process .name::before { content: "Name"; }
+      .process .name { min-width: 150px; }
       .process .uptime::before { content: "Uptime"; }
       .process .memory::before { content: "Memory"; }
       .process .cpu::before { content: "CPU"; }
@@ -69,7 +71,7 @@ export default `<html>
     </style>
   </head>
   <body>
-    <h1 id="header">HookHawk Status</h1>
+    <h1 id="header">Processes</h1>
     <div id="processes"></div>
   </body>
   <script>
