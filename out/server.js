@@ -12,6 +12,7 @@ const chalk_1 = __importDefault(require("chalk"));
 const util_1 = require("util");
 const log_1 = require("./log");
 const status_page_1 = __importDefault(require("./status-page"));
+const status_page_html_1 = __importDefault(require("./status-page-html"));
 const exists = util_1.promisify(fs_1.default.exists);
 const readdir = util_1.promisify(fs_1.default.readdir);
 const readFile = util_1.promisify(fs_1.default.readFile);
@@ -31,12 +32,19 @@ async function start(appsPath, port) {
     new status_page_1.default(io);
     log_1.info(`Searching for apps in ${appsPath}`);
     for (const dir of await readdir(appsPath)) {
-        if (await exists(path_1.default.join(appsPath, dir, 'hawk.sh'))) {
-            await exec(`cd ${dir} && sh hawk.sh`);
-            log_1.success(`Started ${dir}`);
+        if (await exists(path_1.default.join(appsPath, dir, 'prehawk.sh'))) {
+            log_1.info(`[${dir}] Running prehawk.sh`);
+            await exec(`cd ${dir} && sh prehawk.sh`);
         }
+        log_1.info(`[${dir}] Pulling updates`);
+        await exec(`git -C "${dir}" pull`);
+        if (await exists(path_1.default.join(appsPath, dir, 'hawk.sh'))) {
+            log_1.info(`[${dir}] Running hawk.sh`);
+            await exec(`cd ${dir} && sh hawk.sh`);
+        }
+        log_1.success(`[${dir}] Started`);
     }
-    app.get('/', (req, res) => res.sendFile(path_1.default.resolve('status_page.html')));
+    app.get('/', (_, res) => res.send(status_page_html_1.default));
     app.post('/:app', async (req, res) => {
         const appName = req.params.app;
         log_1.info(`[${appName}] Webhook called`);

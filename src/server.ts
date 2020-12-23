@@ -8,6 +8,7 @@ import { promisify } from 'util'
 
 import { info, error, success } from './log'
 import StatusPage from './status-page'
+import StatusPageHTML from './status-page-html'
 
 const exists = promisify(fs.exists)
 const readdir = promisify(fs.readdir)
@@ -48,7 +49,7 @@ export default async function start(appsPath: string, port: number) {
     success(`[${dir}] Started`)
   }
 
-  app.get('/', (req, res) => res.sendFile(path.resolve('status_page.html')))
+  app.get('/', (_, res) => res.send(StatusPageHTML))
 
   app.post('/:app', async (req, res) => {
     const appName = req.params.app as string

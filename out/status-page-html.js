@@ -1,4 +1,6 @@
-<html>
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = `<html>
   <head>
     <title>Processes</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.min.js"></script>
@@ -103,22 +105,22 @@
       socket.emit('getStates')
     })
     socket.on('stateChange', states => {
-      document.getElementById('processes').innerHTML = states.map(s => `<div class="process">
-        <div class="status ${s.status}">${s.status}</div>
-        <div class="name">${s.name}</div>
-        <div class="uptime">${getUptime(s.uptime)}</div>
-        <div class="memory">${(s.memory / 1024 / 1024).toFixed(1)} MB</div>
-        <div class="cpu">${s.cpu}%</div>
-      </div>`).join('\n')
+      document.getElementById('processes').innerHTML = states.map(s => \`<div class="process">
+        <div class="status \${s.status}">\${s.status}</div>
+        <div class="name">\${s.name}</div>
+        <div class="uptime">\${getUptime(s.uptime)}</div>
+        <div class="memory">\${(s.memory / 1024 / 1024).toFixed(1)} MB</div>
+        <div class="cpu">\${s.cpu}%</div>
+      </div>\`).join('\\n')
     })
     setInterval(() => socket.emit('getStates'), 2500)
     setTimeout(() => {
       if (!socket.connected) {
         anim()
-        document.getElementById('processes').innerHTML = `<div class="process error">
+        document.getElementById('processes').innerHTML = \`<div class="process error">
           <span>Connection failed.</span>
-        </div>`
+        </div>\`
       }
     }, 5000)
   </script>
-</html>
+</html>`;
