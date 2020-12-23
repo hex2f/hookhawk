@@ -34,6 +34,12 @@ export default async function start(appsPath: string, port: number) {
 
   new StatusPage(io)
 
+  app.get('/', (_, res) => res.send(StatusPageHTML))
+
+  http.listen(port, () => {
+    info(`Listening on :${port}`)
+  })
+
   info(`Searching for apps in ${appsPath}`)
   for (const dir of await readdir(appsPath)) {
     if (await exists(path.join(appsPath, dir, '.hawkcfg'))) {
@@ -51,8 +57,6 @@ export default async function start(appsPath: string, port: number) {
       success(`[${dir}] Started`)
     }
   }
-
-  app.get('/', (_, res) => res.send(StatusPageHTML))
 
   app.post('/:app', async (req, res) => {
     const appName = req.params.app as string
@@ -106,8 +110,6 @@ export default async function start(appsPath: string, port: number) {
 
     res.sendStatus(200)
   })
-
-  http.listen(port, () => {
-    info(`Listening on :${port}`)
-  })
+  
+  success('Started HookHawk')
 }

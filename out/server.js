@@ -30,6 +30,10 @@ async function start(appsPath, port) {
     const io = require('socket.io')(http);
     app.use(express_1.default.json());
     new status_page_1.default(io);
+    app.get('/', (_, res) => res.send(status_page_html_1.default));
+    http.listen(port, () => {
+        log_1.info(`Listening on :${port}`);
+    });
     log_1.info(`Searching for apps in ${appsPath}`);
     for (const dir of await readdir(appsPath)) {
         if (await exists(path_1.default.join(appsPath, dir, '.hawkcfg'))) {
@@ -47,7 +51,6 @@ async function start(appsPath, port) {
             log_1.success(`[${dir}] Started`);
         }
     }
-    app.get('/', (_, res) => res.send(status_page_html_1.default));
     app.post('/:app', async (req, res) => {
         const appName = req.params.app;
         log_1.info(`[${appName}] Webhook called`);
@@ -90,8 +93,6 @@ async function start(appsPath, port) {
         log_1.success(`[${appName}] Deployed`);
         res.sendStatus(200);
     });
-    http.listen(port, () => {
-        log_1.info(`Listening on :${port}`);
-    });
+    log_1.success('Started HookHawk');
 }
 exports.default = start;
