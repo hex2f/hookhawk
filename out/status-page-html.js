@@ -95,18 +95,17 @@ exports.default = `<html>
       return sec + ' Second' + (sec > 0 ? 's' : '')
     }
 
-    function anim() {
-      document.getElementById('processes').style.opacity = 1
-      document.getElementById('header').style.opacity = 1
-      document.getElementById('processes').style.transform = 'translateY(0px)'
-      document.getElementById('header').style.transform = 'translateY(0px)'
+    function anim(id) {
+      document.getElementById(id).style.opacity = 1
+      document.getElementById(id).style.transform = 'translateY(0px)'
     }
 
     socket.on('connect', () => {
-      anim()
+      anim('header')
       socket.emit('getStates')
     })
     socket.on('stateChange', states => {
+      anim('processes')
       document.getElementById('processes').innerHTML = states.map(s => \`<div class="process">
         <div class="status \${s.status}">\${s.status}</div>
         <div class="name">\${s.name}</div>
@@ -118,7 +117,8 @@ exports.default = `<html>
     setInterval(() => socket.emit('getStates'), 2500)
     setTimeout(() => {
       if (!socket.connected) {
-        anim()
+        anim('header')
+        anim('processes')
         document.getElementById('processes').innerHTML = \`<div class="process error">
           <span>Connection failed.</span>
         </div>\`
