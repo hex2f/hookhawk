@@ -37,6 +37,7 @@ class StatusPage {
                     cpu: proc.monit.cpu || 0,
                 }));
                 this.io.emit('stateChange', this.state);
+                pm2_1.default.disconnect();
             });
         });
     }

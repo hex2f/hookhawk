@@ -42,6 +42,7 @@ export default class StatusPage {
           cpu: proc.monit!.cpu || 0,
         }))
         this.io.emit('stateChange', this.state)
+        pm2.disconnect()
       })
     })
   }
