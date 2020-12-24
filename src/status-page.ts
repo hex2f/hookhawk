@@ -14,6 +14,7 @@ export default class StatusPage {
   io: Server
   state: Array<AppState> = []
   lastStateTime: number = 0
+  pm2Ready: Boolean = false
 
   constructor(io: Server) {
     this.io = io
@@ -27,13 +28,23 @@ export default class StatusPage {
         }
       })
     })
+    this.connectpm2()
+  }
+
+  connectpm2() {
+    pm2.connect(err => {
+      if (err) return error(err)
+      this.pm2Ready = true
+    })
   }
 
   update() {
-    pm2.connect(err => {
-      if (err) return error(err)
+    if (this.pm2Ready) {
       pm2.list((err, list) => {
-        if (err) return error(err)
+        if (err) {
+          this.connectpm2()
+          return error(err)
+        }
         this.state = list.map(proc => ({
           name: proc.name || 'unknown',
           status: proc.pm2_env!.status || 'stopped',
@@ -42,8 +53,7 @@ export default class StatusPage {
           cpu: proc.monit!.cpu || 0,
         }))
         this.io.emit('stateChange', this.state)
-        pm2.disconnect()
       })
-    })
+    }
   }
 }

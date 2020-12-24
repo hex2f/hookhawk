@@ -9,6 +9,7 @@ class StatusPage {
     constructor(io) {
         this.state = [];
         this.lastStateTime = 0;
+        this.pm2Ready = false;
         this.io = io;
         this.io.on('connection', (socket) => {
             socket.on('getStates', () => {
@@ -21,14 +22,22 @@ class StatusPage {
                 }
             });
         });
+        this.connectpm2();
     }
-    update() {
+    connectpm2() {
         pm2_1.default.connect(err => {
             if (err)
                 return log_1.error(err);
+            this.pm2Ready = true;
+        });
+    }
+    update() {
+        if (this.pm2Ready) {
             pm2_1.default.list((err, list) => {
-                if (err)
+                if (err) {
+                    this.connectpm2();
                     return log_1.error(err);
+                }
                 this.state = list.map(proc => ({
                     name: proc.name || 'unknown',
                     status: proc.pm2_env.status || 'stopped',
@@ -37,9 +46,8 @@ class StatusPage {
                     cpu: proc.monit.cpu || 0,
                 }));
                 this.io.emit('stateChange', this.state);
-                pm2_1.default.disconnect();
             });
-        });
+        }
     }
 }
 exports.default = StatusPage;
