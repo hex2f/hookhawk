@@ -10,7 +10,7 @@ switch (process.argv[2]) {
   }
   case "add": {
     if (!process.argv[3] || !process.argv[4]) { usageError(); break }
-    NewApp(process.argv[3].toLowerCase(), process.argv[4])
+    NewApp(process.argv[3].toLowerCase(), process.argv[4], process.argv[5])
     break
   }
   default: {

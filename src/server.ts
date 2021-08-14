@@ -6,7 +6,7 @@ import path from 'path'
 import chalk from 'chalk'
 import { promisify } from 'util'
 
-import { info, error, success } from './log'
+import { info, error, success, warn } from './log'
 import StatusPage from './status-page'
 import StatusPageHTML from './status-page-html'
 
@@ -82,8 +82,16 @@ export default async function start(appsPath: string, port: number) {
       return res.sendStatus(401)
     }
 
-    const secret = await readFile(hawkcfgPath, 'utf-8')
-    info(`[${appName}] secret: ${secret}, signature: ${signature}`)
+    const config = await readFile(hawkcfgPath, 'utf-8')
+    const [secret, ref] = config.split('\n')
+
+    if (ref && ref !== req.body.ref) {
+      error(`[${appName}] Rejected request, invalid ref "${req.body.ref}". Expected "${ref}"`)
+      return res.sendStatus(400)
+    } else if (!ref) {
+      warn('Your .hawkcfg is outdated and missing a ref to match requests against.')
+    }
+
     if (!verifySignature(secret, JSON.stringify(req.body), signature as string)) {
       error(`[${appName}] Invalid signature`)
       return res.sendStatus(401)

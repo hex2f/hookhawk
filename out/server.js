@@ -69,8 +69,15 @@ async function start(appsPath, port) {
             log_1.error(`[${appName}] No signature provided`);
             return res.sendStatus(401);
         }
-        const secret = await readFile(hawkcfgPath, 'utf-8');
-        log_1.info(`[${appName}] secret: ${secret}, signature: ${signature}`);
+        const config = await readFile(hawkcfgPath, 'utf-8');
+        const [secret, ref] = config.split('\n');
+        if (ref && ref !== req.body.ref) {
+            log_1.error(`[${appName}] Rejected request, invalid ref "${req.body.ref}". Expected "${ref}"`);
+            return res.sendStatus(400);
+        }
+        else if (!ref) {
+            log_1.warn('Your .hawkcfg is outdated and missing a ref to match requests against.');
+        }
         if (!verifySignature(secret, JSON.stringify(req.body), signature)) {
             log_1.error(`[${appName}] Invalid signature`);
             return res.sendStatus(401);

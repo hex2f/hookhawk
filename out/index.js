@@ -16,7 +16,7 @@ switch (process.argv[2]) {
             log_1.usageError();
             break;
         }
-        new_app_1.default(process.argv[3].toLowerCase(), process.argv[4]);
+        new_app_1.default(process.argv[3].toLowerCase(), process.argv[4], process.argv[5]);
         break;
     }
     default: {
